@@ -1,37 +1,39 @@
 {
-  "name": "sourcebroker/ip2geo",
-  "license": [
-    "GPL-2.0-or-later"
-  ],
-  "type": "typo3-cms-extension",
-  "description": "Returns geo data based on IP - uses Maxmind databases (free/commercial)",
-  "require": {
-    "geoip2/geoip2": "~2.9",
-    "typo3/cms-core": "^8.7 || ^9.5",
-    "typo3/cms-scheduler": "^8.7 || ^9.5"
-  },
-  "autoload": {
-    "psr-4": {
-      "SourceBroker\\Ip2geo\\": "Classes/"
-    }
-  },
-  "replace": {
-    "typo3-ter/ip2geo": "self.version"
-  },
-  "config": {
-    "vendor-dir": ".Build/vendor",
-    "bin-dir": ".Build/bin"
-  },
-  "extra": {
-    "typo3/cms": {
-      "cms-package-dir": "{$vendor-dir}/typo3/cms",
-      "web-dir": ".Build/Web"
-    }
-  },
-  "scripts": {
-    "post-autoload-dump": [
-      "mkdir -p .Build/Web/typo3conf/ext/",
-      "[ -L .Build/Web/typo3conf/ext/ip2geo ]|| ln -snvf ../../../../. .Build/Web/typo3conf/ext/ip2geo"
-    ]
-  }
+	"name": "sourcebroker/ip2geo",
+	"license": [
+		"GPL-2.0-or-later"
+	],
+	"type": "typo3-cms-extension",
+	"description": "Returns geo data based on IP - uses Maxmind databases (free/commercial)",
+	"version": "1.0.1",
+	"require": {
+		"geoip2/geoip2": "^2.11",
+		"typo3/cms-core": "^11.5",
+		"typo3/cms-scheduler": "^11.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"SourceBroker\\Ip2geo\\": "Classes/"
+		}
+	},
+	"replace": {
+		"typo3-ter/ip2geo": "self.version"
+	},
+	"config": {
+		"vendor-dir": ".Build/vendor",
+		"bin-dir": ".Build/bin"
+	},
+	"extra": {
+		"typo3/cms": {
+			"cms-package-dir": "{$vendor-dir}/typo3/cms",
+			"web-dir": ".Build/Web",
+			"extension-key": "ip2geo"
+		}
+	},
+	"scripts": {
+		"post-autoload-dump": [
+			"mkdir -p .Build/Web/typo3conf/ext/",
+			"[ -L .Build/Web/typo3conf/ext/ip2geo ]|| ln -snvf ../../../../. .Build/Web/typo3conf/ext/ip2geo"
+		]
+	}
 }

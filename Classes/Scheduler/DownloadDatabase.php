@@ -2,6 +2,8 @@
 
 namespace SourceBroker\Ip2geo\Scheduler;
 
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
@@ -123,7 +125,7 @@ class DownloadDatabase extends AbstractTask
 
         $installed = $this->installDatabase();
         if (!$installed) {
-            $this->showMessage('Unable to install databse.', 'Execution', 'ERROR');
+            $this->showMessage('Unable to install database.', 'Execution', 'ERROR');
             return false;
         }
 
@@ -258,7 +260,7 @@ class DownloadDatabase extends AbstractTask
             unlink($targetLink);
         }
 
-        chdir(PATH_site . 'uploads/tx_ip2geo');
+        chdir(Environment::getPublicPath() . '/uploads/tx_ip2geo');
         $symlinked = symlink($this->getDatabaseName() . "/" . pathinfo($targetDatabase, PATHINFO_BASENAME), pathinfo($targetLink, PATHINFO_BASENAME));
         if (!$symlinked) {
             $this->showMessage('Unable to create symbolic link', 'Install', 'ERROR');
@@ -274,7 +276,7 @@ class DownloadDatabase extends AbstractTask
     protected function cleanTemp()
     {
         if (is_dir($this->tempDatabasePath)) {
-            if (preg_match('/^' . str_replace('/', '\/', PATH_site) . '/', $this->tempDatabasePath)) {
+            if (preg_match('/^' . str_replace('/', '\/', Environment::getPublicPath()) . '/', $this->tempDatabasePath)) {
                 GeneralUtility::rmdir($this->tempDatabasePath, true);
             }
         }
@@ -291,7 +293,7 @@ class DownloadDatabase extends AbstractTask
     {
         $toRemove = [];
 
-        if (preg_match('/^' . str_replace('/', '\/', PATH_site) . '/', $this->databasePath)) {
+        if (preg_match('/^' . str_replace('/', '\/', Environment::getPublicPath()) . '/', $this->databasePath)) {
             $files = glob($this->databasePath . '/*.*');
 
             if (count($files)) {
@@ -319,17 +321,22 @@ class DownloadDatabase extends AbstractTask
         if ($messageType === 'ERROR') {
             throw new \RuntimeException(self::class . ' error: ' . $message, 1563719873519);
         }
-        if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI) {
+        if (Environment::isCli()) {
             echo $message . "\n";
         } else {
             $messageType = mb_strtoupper($messageType);
             $messageType = (defined('TYPO3\CMS\Core\Messaging\FlashMessage::' . $messageType))
                 ? constant('TYPO3\CMS\Core\Messaging\FlashMessage::' . $messageType)
-                : FlashMessage::INFO;
+                : AbstractMessage::INFO;
 
             /** @var FlashMessage $flashMessage */
-            $flashMessage = GeneralUtility::makeInstance(FlashMessage::class, $message, $messageTitle, $messageType,
-                                                         true);
+            $flashMessage = GeneralUtility::makeInstance(
+                FlashMessage::class,
+                $message,
+                $messageTitle,
+                $messageType,
+                true
+            );
             /** @var $flashMessageService FlashMessageService */
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             /** @var $defaultFlashMessageQueue FlashMessageQueue */

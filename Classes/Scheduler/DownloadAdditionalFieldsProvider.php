@@ -2,6 +2,9 @@
 
 namespace SourceBroker\Ip2geo\Scheduler;
 
+use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
@@ -11,7 +14,7 @@ use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class DownloadAdditionalFieldsProvider implements AdditionalFieldProviderInterface
+class DownloadAdditionalFieldsProvider extends AbstractAdditionalFieldProvider
 {
     /**
      * Gets additional fields to render in the form to add/edit a task
@@ -44,7 +47,7 @@ class DownloadAdditionalFieldsProvider implements AdditionalFieldProviderInterfa
             //'commercial_city' => 'https://{AccountID}:{LicenseKey}@geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz',
         ];
 
-        $translatedLabel = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate(
+        $translatedLabel = LocalizationUtility::translate(
             'LLL:EXT:ip2geo/Resources/Private/Language/locallang_be.xlf:scheduler.predefinedConfigSelect',
             'ip2geo'
         );
@@ -56,7 +59,7 @@ class DownloadAdditionalFieldsProvider implements AdditionalFieldProviderInterfa
         ';
 
         foreach ($predefinedConfig as $key => $data) {
-            $translatedLabel = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate(
+            $translatedLabel = LocalizationUtility::translate(
                 'LLL:EXT:ip2geo/Resources/Private/Language/locallang_be.xlf:scheduler.predefinedConfig_' . $key,
                 'ip2geo'
             );
@@ -90,7 +93,6 @@ class DownloadAdditionalFieldsProvider implements AdditionalFieldProviderInterfa
 
         return $additionalFields;
     }
-
     /**
      * Validates the additional fields' values
      *
@@ -115,7 +117,6 @@ class DownloadAdditionalFieldsProvider implements AdditionalFieldProviderInterfa
 
         return true;
     }
-
     /**
      * Takes care of saving the additional fields' values in the task's object
      *
@@ -129,7 +130,6 @@ class DownloadAdditionalFieldsProvider implements AdditionalFieldProviderInterfa
         $task->setDownloadUrl($submittedData['downloadUrl']);
         $task->setDatabaseName($submittedData['databaseName']);
     }
-
     /**
      * Show flash message
      *
@@ -141,7 +141,7 @@ class DownloadAdditionalFieldsProvider implements AdditionalFieldProviderInterfa
     protected function showFlashMessage($message, $messageTitle, $messageType = 'INFO')
     {
         $messageType = mb_strtoupper($messageType);
-        $messageType = (defined('TYPO3\CMS\Core\Messaging\FlashMessage::' . $messageType)) ? constant('TYPO3\CMS\Core\Messaging\FlashMessage::' . $messageType) : FlashMessage::INFO;
+        $messageType = (defined('TYPO3\CMS\Core\Messaging\FlashMessage::' . $messageType)) ? constant('TYPO3\CMS\Core\Messaging\FlashMessage::' . $messageType) : AbstractMessage::INFO;
 
         /** @var FlashMessage $flashMessage */
         $flashMessage = GeneralUtility::makeInstance(FlashMessage::class, $message, $messageTitle, $messageType, true);
