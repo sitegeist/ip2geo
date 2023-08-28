@@ -5,7 +5,7 @@ if (!defined('TYPO3')) {
 }
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\SourceBroker\Ip2geo\Scheduler\DownloadDatabase::class] = [
-    'extension' => $_EXTKEY,
+    'extension' => 'ip2geo',
     'title' => 'Download geolocation database',
     'description' => 'Download external database (f.e. MaxMind GeoIP2)',
     'additionalFields' => \SourceBroker\Ip2geo\Scheduler\DownloadAdditionalFieldsProvider::class
